@@ -245,42 +245,6 @@ The project integrates the following frameworks, platforms, and toolchains:
 
 ---
 
-# Project Structure
-
-A simplified project structure is:
-
-```text
-Detection_And_Tracking_Real_Time/
-│
-├── README.md
-│
-├── docs/
-│   ├── Arquitetura.png
-│   └── kv260.jpg
-│
-├── dataset/
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-├── yolov7/
-│   ├── train.py
-│   ├── val.py
-│   ├── detect.py
-│   ├── test_nndct.py
-│   ├── data/
-│   ├── cfg/
-│   └── requirements.txt
-│
-├── trackers/
-│   ├── ByteTrackAdapter
-│   ├── DeepSortAdapter
-│   └── SortAdapter
-│
-└── inference_DPU/
-    └── main.py
-```
-
 ---
 
 # Getting Started
