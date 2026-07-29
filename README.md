@@ -616,37 +616,8 @@ PetaLinux Boot
 
 ---
 
-## 2. Boot the KV260
 
-After inserting the MicroSD card and powering the board, PetaLinux boots on the ARM processor.
-
-The KV260 can then be accessed through the local terminal or through Ethernet/SSH:
-
-```bash
-ssh <username>@<KV260_IP>
-```
-
-Verify the system:
-
-```bash
-uname -a
-```
-
----
-
-## 3. Verify the Platform
-
-The KV260 platform can be monitored using:
-
-```bash
-xmutil xlnx_platformstats
-```
-
-This command was also used during the experiments to monitor platform status, including power and hardware resource information.
-
----
-
-# 🎯 Tracking-by-Detection
+#  Tracking-by-Detection
 
 Object detection alone provides information for a single frame. To maintain target identity over time, the system uses the **Tracking-by-Detection** paradigm.
 
@@ -869,25 +840,6 @@ For multi-object tracking, **SORT** achieved the highest HOTA and MOTP, while **
 
 Considering identity robustness and the real-time constraint, the final analysis identifies **YOLOv7-tiny + ByteTrack** as a strong solution for tactical UAV surveillance, while **SORT** remains highly attractive when computational efficiency and spatial tracking precision are prioritized.
 
----
-
-#  Future Work
-
-Potential future improvements include:
-
-* DPU acceleration of DeepSORT's appearance feature extractor
-* Camera motion compensation
-* Improved CPU/DPU pipeline parallelization
-* Further optimization of post-processing and NMS
-* Multi-camera tracking
-* UAV flight integration
-* Hardware-in-the-loop testing
-* Real-world aerial dataset evaluation
-* Further reduction of end-to-end latency
-
-The report identifies mapping the DeepSORT appearance network onto the DPU as one possible direction for addressing its current computational bottleneck.
-
----
 
 #  References
 
