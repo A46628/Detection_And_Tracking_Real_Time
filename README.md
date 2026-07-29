@@ -473,9 +473,7 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode calib \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish
+    --quant_mode calib 
 ```
 
 During calibration, representative data is used to determine the quantization parameters required to convert the model from floating-point representation to **INT8**.
@@ -507,9 +505,7 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode test \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish
+    --quant_mode test 
 ```
 
 This stage verifies the accuracy of the quantized INT8 model before deployment to the DPU.
@@ -535,70 +531,13 @@ python test_nndct.py \
     --weights yolov7.pt \
     --name yolov7_640_val \
     --quant_mode test \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish \
     --dump_model
 ```
-
 The dumped model is generated in a format suitable for the subsequent Vitis AI compilation flow.
 
 The resulting `.xmodel` is then used for inference with the **DPU on the AMD Kria™ KV260**.
 
 ---
-
-### 7. Quantization Workflow Summary
-
-The complete process can be summarized as:
-
-| Stage                     | `quant_mode`          | Purpose                                |
-| ------------------------- | --------------------- | -------------------------------------- |
-| Floating-point validation | `float`               | Evaluate original FP32 model           |
-| Calibration               | `calib`               | Determine INT8 quantization parameters |
-| Quantized validation      | `test`                | Evaluate INT8 model accuracy           |
-| Model export              | `test + --dump_model` | Generate deployable quantized model    |
-
-### Model Deployment Flow
-
-```text
-                    YOLOv7 FP32
-                         │
-                         ▼
-                ┌─────────────────┐
-                │  Float Testing  │
-                │ quant_mode=float│
-                └────────┬────────┘
-                         │
-                         ▼
-                ┌─────────────────┐
-                │   Calibration   │
-                │ quant_mode=calib│
-                └────────┬────────┘
-                         │
-                         ▼
-                  INT8 Quantization
-                         │
-                         ▼
-                ┌─────────────────┐
-                │ Quantized Test  │
-                │ quant_mode=test │
-                └────────┬────────┘
-                         │
-                         ▼
-                  --dump_model
-                         │
-                         ▼
-                      XModel
-                         │
-                         ▼
-                Vitis AI Compiler
-                         │
-                         ▼
-                   KV260 DPU
-```
-
-> **Note:** The Docker environment ensures that the Vitis AI and NNDCT dependencies are isolated from the host system, making the quantization workflow reproducible.
-
-
 
 
 ## Supported Trackers
