@@ -1,4 +1,4 @@
-# 🛡️ Defense Drone System with Real-Time Object Detection and Multi-Object Tracking
+#  Defense Drone System with Real-Time Object Detection and Multi-Object Tracking
 
 > **FPGA-Accelerated UAV Perception using YOLOv7, AMD Vitis AI and the Kria™ KV260**
 
@@ -8,7 +8,7 @@ The system was developed and evaluated on the **AMD Kria™ KV260 Vision AI Star
 
 ---
 
-## 📌 Table of Contents
+##  Table of Contents
 
 * [About The Project](#-about-the-project)
 * [System Overview](#-system-overview)
@@ -59,33 +59,10 @@ The system was developed and evaluated on the **AMD Kria™ KV260 Vision AI Star
 
 ---
 
-# 🔎 About The Project
+#  About The Project
 
 This project investigates the development of an **autonomous embedded UAV perception system** capable of detecting and tracking multiple military-related targets in real time.
 
-The system follows the **Tracking-by-Detection** paradigm:
-
-```text
-Camera / Video
-      │
-      ▼
-Pre-processing
-      │
-      ▼
-YOLO Object Detection
-      │
-      ▼
-DPU-Accelerated Inference
-      │
-      ▼
-Post-processing
-      │
-      ▼
-Multi-Object Tracking
-      │
-      ▼
-Persistent Target IDs
-```
 
 The main challenge is achieving real-time performance on an embedded platform with limited computational and energy resources.
 
@@ -103,49 +80,17 @@ The final embedded implementation uses **YOLOv7-tiny + INT8 + DPU acceleration o
 
 ---
 
-# 🏗️ System Overview
+#  System Overview
 
 The complete system is divided between the **ARM processor** and the **FPGA-based DPU**.
 
-```text
-                    AMD Kria™ KV260
-             ┌─────────────────────────┐
-             │                         │
-             │       ARM CPU           │
-             │                         │
-Camera ─────►│ Pre-processing          │
-             │ Post-processing         │
-             │ NMS                     │
-             │ Tracking                │
-             │                         │
-             │          │              │
-             │          ▼              │
-             │     Vitis AI Runtime    │
-             │          │              │
-             │          ▼              │
-             │     ┌───────────┐       │
-             │     │    DPU    │       │
-             │     │ YOLOv7-tiny│      │
-             │     │    INT8   │       │
-             │     └─────┬─────┘       │
-             │           │             │
-             └───────────┼─────────────┘
-                         │
-                         ▼
-                 Object Detections
-                         │
-                         ▼
-                Tracking-by-Detection
-                         │
-                         ▼
-                  Target IDs / Paths
-```
+![System Overview](docs/Arquitetura.png)
 
 The DPU performs the computationally intensive neural-network inference, while the ARM processor handles frame processing, post-processing, tracking and system coordination.
 
 ---
 
-# 🚀 Key Results
+#  Key Results
 
 | Metric                 |              Result |
 | ---------------------- | ------------------: |
@@ -228,16 +173,7 @@ The dataset follows the standard YOLO structure with separate `images/` and `lab
 
 ---
 
-# 🧰 Built With
-
-### Machine Learning
-
-* **PyTorch**
-* **YOLOv7**
-* **YOLOv8**
-* **YOLO11**
-* **OpenCV**
-* **Python**
+# Built With
 
 ### FPGA / Embedded AI
 
@@ -262,7 +198,7 @@ The dataset follows the standard YOLO structure with separate `images/` and `lab
 
 ---
 
-# 📁 Project Structure
+#  Project Structure
 
 ```text
 Detection_And_Tracking_Real_Time/
@@ -296,7 +232,7 @@ Detection_And_Tracking_Real_Time/
 
 ---
 
-# ⚙️ Getting Started
+#  Getting Started
 
 ## Prerequisites
 
@@ -353,7 +289,7 @@ pip install -r requirements.txt
 
 ---
 
-# 🎯 Training
+#  Training
 
 ## Train YOLOv7-tiny
 
@@ -398,7 +334,7 @@ The validation process evaluates:
 
 ---
 
-# 🖥️ GPU Inference
+#  GPU Inference
 
 ### Single Image
 
@@ -432,7 +368,7 @@ python detect.py \
 
 ---
 
-# 🔧 Vitis AI Deployment
+#  Vitis AI Deployment
 
 The deployment workflow converts the original FP32 model into a hardware-optimized **INT8 model** suitable for execution on the DPU.
 
@@ -612,7 +548,7 @@ The final output is an `.xmodel` suitable for execution through Vitis AI Runtime
 
 ---
 
-# 💻 AMD Kria™ KV260 Setup
+#  AMD Kria™ KV260 Setup
 
 The final embedded deployment targets the **AMD Kria™ KV260 Vision AI Starter Kit**.
 
@@ -795,7 +731,7 @@ The final quantitative embedded comparison focused on:
 
 ---
 
-# 📈 Results & Benchmarks
+#  Results & Benchmarks
 
 ## 1. Detection Model Validation — GPU
 
@@ -916,7 +852,7 @@ The results show that the DPU inference is only one component of the complete re
 
 ---
 
-# 🏆 Conclusion
+#  Conclusion
 
 The experiments demonstrate that **YOLOv7-tiny + INT8 + DPU acceleration** provides the best balance between detection performance, latency, power consumption and memory usage for the target embedded platform.
 
@@ -935,7 +871,7 @@ Considering identity robustness and the real-time constraint, the final analysis
 
 ---
 
-# 🔮 Future Work
+#  Future Work
 
 Potential future improvements include:
 
@@ -953,7 +889,7 @@ The report identifies mapping the DeepSORT appearance network onto the DPU as on
 
 ---
 
-# 📚 References
+#  References
 
 ### Dataset
 
@@ -979,7 +915,7 @@ Madhuwala, R. *Military Assets Dataset (12 Classes - YOLO8 Format).* Kaggle, 202
 
 ---
 
-# 📖 Thesis
+#  Thesis
 
 This repository accompanies the Master's dissertation:
 
@@ -989,16 +925,3 @@ The project investigates real-time object detection and multi-object tracking us
 
 ---
 
-# 📬 Contact
-
-**Paulo Tavares**
-
-For questions, collaboration or further information about this project, please open an issue or contact the author through the repository.
-
----
-
-## ⭐ Acknowledgements
-
-This work was developed as part of a Master's research project focused on embedded AI, FPGA acceleration and real-time UAV perception.
-
-Special thanks to the academic and technical resources provided by **AMD/Xilinx**, the open-source computer vision community, and the authors of the datasets and tracking algorithms used throughout this work.
