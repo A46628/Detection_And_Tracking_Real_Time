@@ -400,28 +400,6 @@ docker run -it \
     /bin/bash
 ```
 
-The `-v $(pwd):/workspace` option mounts the current project directory inside the container.
-
-After starting the container, enter the working directory:
-
-```bash
-cd /workspace
-```
-
-If the container already exists and is stopped, it can be started again using:
-
-```bash
-docker start -ai vitis-ai-yolov7
-```
-
-To verify that the Vitis AI environment is available:
-
-```bash
-python --version
-```
-
----
-
 ### 2. Enter the YOLOv7 Project
 
 Inside the Docker container:
@@ -442,7 +420,7 @@ Before quantization, the original floating-point model is evaluated using the NN
 cd /workspace/yolov7
 
 python test_nndct.py \
-    --data data/coco.yaml \
+    --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
     --conf 0.001 \
@@ -465,7 +443,7 @@ The next step performs **Post-Training Quantization (PTQ)** calibration.
 cd /workspace/yolov7
 
 python test_nndct.py \
-    --data data/coco.yaml \
+    --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
     --conf 0.001 \
@@ -478,15 +456,6 @@ python test_nndct.py \
 
 During calibration, representative data is used to determine the quantization parameters required to convert the model from floating-point representation to **INT8**.
 
-The following NNDCT transformations are also applied:
-
-```text
-Sigmoid → Hard-Sigmoid
-SiLU    → Hard-Swish
-```
-
-These transformations improve compatibility with the target DPU architecture.
-
 ---
 
 ### 5. INT8 Quantized Model Validation
@@ -497,7 +466,7 @@ After calibration, the quantized model can be evaluated using:
 cd /workspace/yolov7
 
 python test_nndct.py \
-    --data data/coco.yaml \
+    --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
     --conf 0.001 \
@@ -522,7 +491,7 @@ Finally, the calibrated and quantized model is exported using the `--dump_model`
 cd /workspace/yolov7
 
 python test_nndct.py \
-    --data data/coco.yaml \
+    --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
     --conf 0.001 \
