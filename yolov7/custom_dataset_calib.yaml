@@ -1,0 +1,33 @@
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# Yolov8CarDetection Dataset in YOLO format dataset https://www.kaggle.com/datasets/kylegraupe/wind-turbine-image-dataset-for-computer-vision by KYLE GRAUPE
+# Example usage: yolo train data=custom_dataset.yaml
+# parent
+# ├── ultralytics
+# └── data
+#     └── WindTurbines
+
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+train: ../military_object_dataset/train_copy.txt
+val: ../military_object_dataset/val_copy.txt
+test: ../military_object_dataset/test_copy.txt
+
+
+# number of classes
+nc: 12
+
+# Classes
+names:
+  0: camouflage_soldier
+  1: weapon
+  2: military_tank
+  3: military_truck
+  4: military_vehicle
+  5: civilian
+  6: soldier
+  7: civilian_vehicle
+  8: military_artillery
+  9: trench
+  10: military_aircraft
+  11: military_warship
+

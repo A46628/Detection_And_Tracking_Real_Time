@@ -1,0 +1,55 @@
+# ========================
+# Optimization parameters
+# ========================
+
+lr0: 0.005          # ↓ LR inicial (mais estável sem SiLU)
+lrf: 0.1            # final OneCycleLR learning rate (lr0 * lrf)
+momentum: 0.92      # ligeiramente menor que 0.937
+weight_decay: 0.0007  # ligeiramente maior para compensar ausência de SiLU
+
+warmup_epochs: 5.0
+warmup_momentum: 0.85
+warmup_bias_lr: 0.05  # ↓ bias LR para evitar explosões iniciais
+
+# ========================
+# Loss gains
+# ========================
+
+box: 0.05
+cls: 0.3
+cls_pw: 1.0
+obj: 0.7
+obj_pw: 1.0
+
+iou_t: 0.20
+anchor_t: 4.0
+
+fl_gamma: 0.0
+
+# ========================
+# Data augmentation
+# ========================
+
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+
+degrees: 0.0
+translate: 0.2
+scale: 0.5
+shear: 0.0
+perspective: 0.0
+
+flipud: 0.0
+fliplr: 0.5
+
+mosaic: 1.0
+mixup: 0.0
+copy_paste: 0.0
+paste_in: 0.0
+
+# ========================
+# Loss computation
+# ========================
+
+loss_ota: 1
