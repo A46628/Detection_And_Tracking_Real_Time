@@ -6,7 +6,7 @@ import vart
 import xir
 
 # ============================================================
-# CONFIGURATION
+# CONFIGURATION vff
 # ============================================================
 
 XMODEL_PATH = "yolo_tiny.xmodel"
