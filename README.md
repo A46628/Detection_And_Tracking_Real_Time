@@ -117,16 +117,71 @@ The dataset is publicly available on Kaggle:
 The dataset follows the standard YOLO directory structure:
 
 ```text
+```text
 dataset/
 ├── train/
 │   ├── images/
+│   │   ├── 01.jpg
+│   │   ├── 02.jpg
+│   │   ├── 03.jpg
+│   │   └── ...
+│   │
 │   └── labels/
+│       ├── 01.txt
+│       ├── 02.txt
+│       ├── 03.txt
+│       └── ...
+│
 ├── val/
 │   ├── images/
+│   │   ├── 01.jpg
+│   │   ├── 02.jpg
+│   │   ├── 03.jpg
+│   │   └── ...
+│   │
 │   └── labels/
-└── test/
-    ├── images/
-    └── labels/
+│       ├── 01.txt
+│       ├── 02.txt
+│       ├── 03.txt
+│       └── ...
+│
+├── test/
+│   ├── images/
+│   │   ├── 01.jpg
+│   │   ├── 02.jpg
+│   │   ├── 03.jpg
+│   │   └── ...
+│   │
+│   └── labels/
+│       ├── 01.txt
+│       ├── 02.txt
+│       ├── 03.txt
+│       └── ...
+│
+└── military_dataset.yaml
+```
+
+Each image has a corresponding annotation file with the same filename:
+
+```text
+images/01.jpg  →  labels/01.txt
+images/02.jpg  →  labels/02.txt
+images/03.jpg  →  labels/03.txt
+```
+
+The dataset follows the YOLO annotation format:
+
+```text
+<class_id> <x_center> <y_center> <width> <height>
+```
+
+For example:
+
+```text
+0 0.512 0.438 0.214 0.356
+2 0.721 0.563 0.183 0.241
+```
+
 ```
 
 Each image is associated with a YOLO annotation file containing:
