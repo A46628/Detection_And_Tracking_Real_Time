@@ -274,9 +274,6 @@ The best model is generated at:
 runs/train/yolov7-tiny-military/weights/best.pt
 ```
 
-The same experimental methodology was used to compare YOLOv7, YOLOv8 and YOLO11 models before selecting a suitable architecture for embedded deployment.
-
----
 
 ## Validate the Model
 
