@@ -102,5 +102,5 @@ This project integrates the following frameworks, platforms, and toolchains:
 
  - **Webcam:**
   ```bash
-  python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source 0
+   python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source 0
 
