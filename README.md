@@ -67,3 +67,6 @@ This project integrates the following frameworks, platforms, and toolchains:
    ```bash
    git clone [https://github.com/seu-usuario/Defense-Drone-System.git](https://github.com/seu-usuario/Defense-Drone-System.git)
    cd Defense-Drone-System
+
+
+   Power & Memory Profile (Kria KV260 Target Hardware)MetricYOLOv7-tinyYOLOv7 (Base)YOLOv7-xTotal Power Consumption5.4 W10.2 W10.9 WTotal Current1068 mA2020 mA2172 mAAvailable CMA Memory1535 MB1453 MB1388 MBUsed CMA Memory36.8 MB116.9 MB179.8 MB
