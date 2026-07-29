@@ -490,9 +490,7 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode calib \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish
+    --quant_mode calib 
 ```
 
 During calibration, representative data is used to determine the quantization parameters required to convert the model from floating-point representation to **INT8**.
@@ -515,9 +513,7 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode test \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish
+    --quant_mode test 
 ```
 
 This stage verifies the accuracy of the quantized INT8 model before deployment to the DPU.
@@ -541,8 +537,6 @@ python test_nndct.py \
     --weights yolov7.pt \
     --name yolov7_640_val \
     --quant_mode test \
-    --nndct_convert_sigmoid_to_hsigmoid \
-    --nndct_convert_silu_to_hswish \
     --dump_model
 ```
 
