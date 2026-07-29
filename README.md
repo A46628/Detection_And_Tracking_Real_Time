@@ -69,10 +69,9 @@ This project integrates the following frameworks, platforms, and toolchains:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/seu-usuario/Defense-Drone-System.git
-   cd Defense-Drone-System
-   Set Up Python Environment:
-   conda create -n drone-env python=3.8 -y
+   git clone https://github.com/A46628/Detection_And_Tracking_Real_Time.git
+   cd Detection_And_Tracking_Real_Time
+   cd yolov7
 
 2. **Set Up Python Environment
    ```bash
