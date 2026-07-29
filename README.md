@@ -8,6 +8,10 @@ The system was developed and evaluated on the **AMD Kria™ KV260 Vision AI Star
 
 The final YOLOv7-tiny deployment achieved **52 FPS**, **19 ms inference latency**, approximately **5.4 W power consumption**, and **36.8 MB memory usage** on the KV260.
 
+
+
+![System Architecture](docs/result_yolovx.png)
+
 ---
 
 ## Table of Contents
