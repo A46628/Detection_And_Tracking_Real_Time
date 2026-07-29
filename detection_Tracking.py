@@ -115,10 +115,8 @@ def main():
                     frame = box_annotator.annotate(frame, detections)
                     frame = label_annotator.annotate(frame, detections, labels=labels)
 
-            # --- 5. CALCULAR SOMA TOTAL DO FRAME ---
             total_time = preprocess_time + inference_time + postprocess_time + tracking_time
 
-            # Print formatado no terminal
             print(f"--- Frame {frame_idx:04d} ---")
             print(f"  Pre-processamento: {preprocess_time:.2f} ms")
             print(f"  Inferencia (DPU): {inference_time:.2f} ms")
