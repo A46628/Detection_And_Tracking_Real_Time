@@ -653,7 +653,417 @@ The implemented trackers are based on temporal prediction and data association u
 
 ---
 
+<<<<<<< Updated upstream
 ## SORT
+=======
+For this project, the **PetaLinux 2026.1** installer was used:
+
+[PetaLinux 2026.1 Installer](https://account.amd.com/en/forms/downloads/xef.html?filename=petalinux-v2026.1-06061130-installer.run&utm_source=chatgpt.com)
+
+The downloaded PetaLinux image was then transferred to a **MicroSD card** using **balenaEtcher**.
+
+**balenaEtcher:**
+
+[Download balenaEtcher](https://etcher.balena.io/?utm_source=chatgpt.com)
+
+balenaEtcher provides a simple three-step process for writing an operating-system image to removable storage: **select the image, select the target drive, and flash the image**. It also validates the flashing process after completion.
+
+The process is:
+
+1. Download the appropriate **PetaLinux image** from the AMD Embedded Software portal.
+2. Install and open **balenaEtcher**.
+3. Insert the MicroSD card into the host computer.
+4. Select the downloaded PetaLinux image.
+5. Select the MicroSD card as the target device.
+6. Flash the image to the MicroSD card.
+7. Wait for the validation process to complete.
+8. Safely eject the MicroSD card.
+9. Insert the MicroSD card into the **AMD Kria™ KV260**.
+10. Power on the board and allow PetaLinux to boot.
+
+
+##  Copy the Model and Video to the KV260
+
+After compiling the model, copy the `.xmodel` file to the KV260.
+
+For example, from the host PC:
+
+```bash
+scp yolo_tiny.xmodel <username>@<KV260_IP>:/home/<username>/models/
+```
+
+Copy the input video:
+
+```bash
+scp teste2.mp4 <username>@<KV260_IP>:/home/<username>/videos/
+```
+
+Then connect to the KV260:
+
+```bash
+ssh <username>@<KV260_IP>
+```
+
+
+##  Run the Application
+
+Assuming the main application is saved as:
+
+```text
+dpu_tracking.py
+```
+
+the default execution is:
+
+```bash
+python3 dpu_tracking.py
+```
+
+By default, the application uses:
+
+```text
+Model:        yolo_tiny.xmodel
+Video:        teste2.mp4
+Tracker:      ByteTrack
+Image size:   640 × 640
+Confidence:   0.25
+NMS threshold: 0.45
+Output:       results_mot.txt
+Socket host:  10.64.10.18
+Socket port:  5000
+```
+
+---
+
+#  Tracker Selection
+
+The application supports three tracking algorithms:
+
+```text
+ByteTrack
+DeepSORT
+SORT
+```
+
+The tracker can be selected using:
+
+```bash
+--tracker
+```
+
+Available options:
+
+```bash
+--tracker bytetrack
+--tracker deepsort
+--tracker sort
+```
+
+---
+
+## 6. Run with ByteTrack
+
+ByteTrack is the default tracker.
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker bytetrack \
+    --save-txt ~/results/bytetrack.txt
+```
+
+ByteTrack-specific parameters can be adjusted with:
+
+```bash
+--track-buffer 30
+```
+
+For example:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker bytetrack \
+    --track-buffer 30 \
+    --conf-thresh 0.25 \
+    --nms-thresh 0.45 \
+    --save-txt ~/results/bytetrack.txt
+```
+
+---
+
+##  Run with DeepSORT
+
+To use DeepSORT:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker deepsort \
+    --save-txt ~/results/deepsort.txt
+```
+
+DeepSORT-specific parameters include:
+
+```bash
+--max-age 30
+--n-init 3
+```
+
+Example:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker deepsort \
+    --max-age 30 \
+    --n-init 3 \
+    --conf-thresh 0.25 \
+    --nms-thresh 0.45 \
+    --save-txt ~/results/deepsort.txt
+```
+
+---
+
+##  Run with SORT
+
+To use SORT:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker sort \
+    --save-txt ~/results/sort.txt
+```
+
+SORT-specific parameters include:
+
+```bash
+--max-age 30
+--min-hits 3
+--iou-thresh 0.3
+```
+
+Example:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker sort \
+    --max-age 30 \
+    --min-hits 3 \
+    --iou-thresh 0.3 \
+    --conf-thresh 0.25 \
+    --nms-thresh 0.45 \
+    --save-txt ~/results/sort.txt
+```
+
+---
+
+#  Command-Line Arguments
+
+The application provides the following parameters:
+
+| Argument         | Default            | Description                      |
+| ---------------- | ------------------ | -------------------------------- |
+| `--xmodel`       | `yolo_tiny.xmodel` | Path to the compiled DPU model   |
+| `--video`        | `teste2.mp4`       | Input video                      |
+| `--host`         | `10.64.10.18`      | TCP socket server IP             |
+| `--port`         | `5000`             | TCP socket port                  |
+| `--img-size`     | `640`              | Neural network input resolution  |
+| `--conf-thresh`  | `0.25`             | Detection confidence threshold   |
+| `--nms-thresh`   | `0.45`             | NMS threshold                    |
+| `--save-txt`     | `results_mot.txt`  | MOT output file                  |
+| `--tracker`      | `bytetrack`        | Tracking algorithm               |
+| `--track-buffer` | `30`               | ByteTrack track buffer           |
+| `--max-age`      | `30`               | Maximum frames without detection |
+| `--n-init`       | `3`                | DeepSORT track initialization    |
+| `--min-hits`     | `3`                | SORT minimum detections          |
+| `--iou-thresh`   | `0.3`              | SORT IoU association threshold   |
+
+---
+
+# 📡 TCP Socket Streaming
+
+The application streams each processed frame through a TCP socket.
+
+The connection is established using:
+
+```python
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((args.host, args.port))
+```
+
+The processed frame is encoded as JPEG:
+
+```python
+_, jpeg = cv2.imencode(
+    '.jpg',
+    frame,
+    [cv2.IMWRITE_JPEG_QUALITY, 70]
+)
+```
+
+The image is then transmitted through the socket.
+
+
+The IP address and port can be configured using:
+
+```bash
+--host <IP_ADDRESS>
+--port <PORT>
+```
+
+For example:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker bytetrack \
+    --host IP_ADDRESS \
+    --port 5000
+```
+
+> The receiving application must be running and listening on the specified IP address and TCP port before starting the DPU application.
+
+---
+
+# 📄 MOT Output
+
+The application can save tracking results in a MOT-style text file.
+
+Enable output using:
+
+```bash
+--save-txt results_mot.txt
+```
+
+For example:
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker bytetrack \
+    --save-txt ~/results/bytetrack.txt
+```
+
+The output format is:
+
+```text
+<frame>,<id>,<bb_left>,<bb_top>,<bb_width>,<bb_height>,<conf>,<class>,<x>,<y>
+```
+
+Example:
+
+```text
+1,1,120.00,85.00,75.00,140.00,1,7,-1,-1
+1,2,420.00,110.00,160.00,100.00,1,3,-1,-1
+2,1,123.00,87.00,76.00,141.00,1,7,-1,-1
+```
+
+The file can subsequently be used to evaluate tracking performance using metrics such as:
+
+* HOTA
+* MOTA
+* MOTP
+* False Positives
+* False Negatives
+* Identity Switches
+* Mostly Tracked
+* Mostly Lost
+
+---
+
+# ⏱️ Runtime Measurements
+
+For every processed frame, the application measures:
+
+```text
+Pre-processing
+      │
+      ▼
+DPU Inference
+      │
+      ▼
+Post-processing
+      │
+      ▼
+Tracking
+      │
+      ▼
+Total Processing Time
+```
+
+The application prints information such as:
+
+```text
+--- Frame 0001 [BYTETRACK] ---
+  Tracks Active:     3
+  Total Time:        35.69 ms
+```
+
+The total processing time is calculated as:
+
+```text
+Total Time =
+    Pre-processing
+  + DPU Inference
+  + Post-processing
+  + Tracking
+```
+
+This allows the computational cost of each stage of the pipeline to be analyzed independently.
+
+---
+
+# 🧪 Running All Trackers
+
+For experimental comparison, the three trackers can be executed sequentially.
+
+### ByteTrack
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker bytetrack \
+    --save-txt ~/results/bytetrack.txt
+```
+
+### DeepSORT
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker deepsort \
+    --save-txt ~/results/deepsort.txt
+```
+
+### SORT
+
+```bash
+python3 dpu_tracking.py \
+    --xmodel ~/models/yolo_tiny.xmodel \
+    --video ~/videos/teste2.mp4 \
+    --tracker sort \
+    --save-txt ~/results/sort.txt
+```
+
+The resulting files can then be compared using the MOT evaluation pipeline.
+
+## Supported Trackers
+
+### SORT
+>>>>>>> Stashed changes
 
 **Simple Online and Realtime Tracking**
 
