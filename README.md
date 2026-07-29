@@ -87,7 +87,6 @@ This project integrates the following frameworks, platforms, and toolchains:
     to evaluate the model's accuracy (mAP, Precision, Recall) on the validation or test set:
     ```bash
         python val.py --weights runs/train/yolov7-tiny-military/weights/best.pt --data data/military_dataset.yaml --img 640 --device 0
-
 ## Usage
 ### Run Inference with Trained Weights (GPU / PC)
 
@@ -100,8 +99,9 @@ This project integrates the following frameworks, platforms, and toolchains:
   python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source path/to/video.mp4
 
  - **Webcam:**
-  ```bash
+   ```bash
    python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source 0
+
 
 ### Detection Model Validation (GPU)
 
@@ -112,4 +112,7 @@ This project integrates the following frameworks, platforms, and toolchains:
 | **YOLOv7x** | 0.517 | 0.323 | **0.716** | 0.494 | 167 | 6.0 |
 | **YOLOv8** | 0.625 | 0.448 | 0.621 | 0.578 | 294 | 3.4 |
 | **YOLO11n** | 0.560 | 0.375 | 0.695 | 0.502 | 370 | 2.7 |
+
+
+
 
