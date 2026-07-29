@@ -12,28 +12,6 @@ The final YOLOv7-tiny deployment achieved **52 FPS**, **19 ms inference latency*
 
 ![System Architecture](docs/result_yolovx.png)
 
-This project makes use of and adapts code from the following open-source repositories:
-
-### YOLOv7
-
-The code in the [`yolov7`](https://github.com/A46628/Detection_And_Tracking_Real_Time/tree/main/yolov7) directory was adapted from the original **YOLOv7** implementation by WongKinYiu.
-
-Original repository:
-
-
-[WongKinYiu/YOLOv7 — Implementation of YOLOv7](https://github.com/WongKinYiu/yolov7)
-
-The original repository provides the YOLOv7 implementation used as the foundation for model training, validation, inference, and subsequent modifications required for the Vitis AI / DPU deployment.
-
-### TrackEval
-
-The code and evaluation workflow in the [`TrackEval`](https://github.com/A46628/Detection_And_Tracking_Real_Time/tree/main/TrackEval) directory were adapted from **TrackEval**, developed by Jonathon Luiten and contributors.
-
-Original repository:
-
-[JonathonLuiten/TrackEval — HOTA and other evaluation metrics for Multi-Object Tracking](https://github.com/JonathonLuiten/TrackEval)
-
-TrackEval was used as the basis for evaluating the multi-object tracking results, including metrics such as **HOTA, MOTA, MOTP, False Positives, False Negatives, Identity Switches, Mostly Tracked, and Mostly Lost**.
 
 ---
 
@@ -1139,6 +1117,29 @@ Potential future improvements include:
 
 # References
 
+This project makes use of and adapts code from the following open-source repositories:
+
+### YOLOv7
+
+The code in the [`yolov7`](https://github.com/A46628/Detection_And_Tracking_Real_Time/tree/main/yolov7) directory was adapted from the original **YOLOv7** implementation by WongKinYiu.
+
+Original repository:
+
+
+[WongKinYiu/YOLOv7 — Implementation of YOLOv7](https://github.com/WongKinYiu/yolov7)
+
+The original repository provides the YOLOv7 implementation used as the foundation for model training, validation, inference, and subsequent modifications required for the Vitis AI / DPU deployment.
+
+### TrackEval
+
+The code and evaluation workflow in the [`TrackEval`](https://github.com/A46628/Detection_And_Tracking_Real_Time/tree/main/TrackEval) directory were adapted from **TrackEval**, developed by Jonathon Luiten and contributors.
+
+Original repository:
+
+[JonathonLuiten/TrackEval — HOTA and other evaluation metrics for Multi-Object Tracking](https://github.com/JonathonLuiten/TrackEval)
+
+TrackEval was used as the basis for evaluating the multi-object tracking results, including metrics such as **HOTA, MOTA, MOTP, False Positives, False Negatives, Identity Switches, Mostly Tracked, and Mostly Lost**.
+
 ### Dataset
 
 Madhuwala, R. *Military Assets Dataset (12 Classes - YOLO8 Format).* Kaggle, 2024.
@@ -1160,7 +1161,6 @@ Madhuwala, R. *Military Assets Dataset (12 Classes - YOLO8 Format).* Kaggle, 202
 [balenaEtcher](https://etcher.balena.io/)
 
 [Xilinx Vitis AI CPU Docker Image](https://hub.docker.com/r/xilinx/vitis-ai-cpu)
-
 ---
 
 # Contact and Acknowledgements
