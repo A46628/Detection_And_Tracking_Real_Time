@@ -22,7 +22,6 @@ ANCHORS = [[12, 16, 19, 36, 40, 28], [36, 75, 76, 55, 72, 146], [142, 110, 192, 
 def sigmoid(x): return 1.0 / (1.0 + np.exp(-np.clip(x, -10, 10)))
 
 def preprocess(img, fix_point):
-    # Primeiro reduz o tamanho (menos píxeis para converter cor)
     img = cv2.resize(img, (IMG_SIZE, IMG_SIZE), interpolation=cv2.INTER_NEAREST) 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     scale = (2**fix_point) / 255.0
@@ -124,7 +123,6 @@ def main():
             print(f"  Tracking:          {tracking_time:.2f} ms")
             print(f"  TEMPO TOTAL:       {total_time:.2f} ms\n")
 
-            # Compressão e Envio por Socket
             _, jpeg = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
             data = jpeg.tobytes()
             s.sendall(struct.pack(">L", len(data)) + data)
