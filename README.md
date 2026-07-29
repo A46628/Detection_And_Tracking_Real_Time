@@ -96,4 +96,11 @@ This project integrates the following frameworks, platforms, and toolchains:
   ```bash
   python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source path/to/image.jpg
 
-4. 
+- **Video File:**
+  ```bash
+  python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source path/to/video.mp4
+
+ - **Webcam:**
+  ```bash
+  python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source 0
+
