@@ -1,7 +1,5 @@
 #  Defense Drone System with Real-Time Object Detection and Multi-Object Tracking
 
-> **FPGA-Accelerated UAV Perception using YOLOv7, AMD Vitis AI and the Kria™ KV260**
-
 An embedded real-time aerial surveillance system for **military object detection and multi-object tracking**, based on a hardware–software co-design approach combining **Deep Learning, FPGA acceleration, DPU inference, and Tracking-by-Detection**.
 
 The system was developed and evaluated on the **AMD Kria™ KV260 Vision AI Starter Kit**, using **YOLOv7-tiny quantized to INT8** and accelerated through the DPU.
@@ -111,7 +109,7 @@ The final system demonstrates that hardware acceleration can provide real-time e
 
 ---
 
-# 📊 Dataset
+#  Dataset
 
 The project uses the **Military Assets Dataset**, containing **26,315 annotated images** divided into training, validation and testing subsets.
 
@@ -196,41 +194,6 @@ The dataset follows the standard YOLO structure with separate `images/` and `lab
 * Docker
 * Conda / Miniconda
 
----
-
-#  Project Structure
-
-```text
-Detection_And_Tracking_Real_Time/
-│
-├── dataset/
-│   ├── train/
-│   ├── val/
-│   └── test/
-│
-├── yolov7/
-│   ├── cfg/
-│   ├── data/
-│   ├── models/
-│   ├── runs/
-│   ├── train.py
-│   ├── val.py
-│   ├── detect.py
-│   ├── test_nndct.py
-│   └── requirements.txt
-│
-├── trackers/
-│   ├── SORT/
-│   ├── DeepSORT/
-│   └── ByteTrack/
-│
-├── docs/
-│   └── images/
-│
-└── README.md
-```
-
----
 
 #  Getting Started
 
@@ -284,7 +247,7 @@ conda activate drone-env
 Install the Python dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install -r yolov7\requirements.txt
 ```
 
 ---
@@ -294,7 +257,7 @@ pip install -r requirements.txt
 ## Train YOLOv7-tiny
 
 ```bash
-python train.py \
+python yolov7\train.py \
     --workers 8 \
     --device 0 \
     --batch-size 16 \
@@ -318,7 +281,7 @@ The same experimental methodology was used to compare YOLOv7, YOLOv8 and YOLO11 
 ## Validate the Model
 
 ```bash
-python val.py \
+python yolov7\val.py \
     --weights runs/train/yolov7-tiny-military/weights/best.pt \
     --data data/military_dataset.yaml \
     --img 640 \
@@ -339,7 +302,7 @@ The validation process evaluates:
 ### Single Image
 
 ```bash
-python detect.py \
+python yolov7\detect.py \
     --weights runs/train/yolov7-tiny-military/weights/best.pt \
     --conf 0.25 \
     --img-size 640 \
@@ -349,7 +312,7 @@ python detect.py \
 ### Video
 
 ```bash
-python detect.py \
+python yolov7\detect.py \
     --weights runs/train/yolov7-tiny-military/weights/best.pt \
     --conf 0.25 \
     --img-size 640 \
@@ -359,7 +322,7 @@ python detect.py \
 ### Webcam
 
 ```bash
-python detect.py \
+python yolov7\detect.py \
     --weights runs/train/yolov7-tiny-military/weights/best.pt \
     --conf 0.25 \
     --img-size 640 \
@@ -446,7 +409,7 @@ docker start -ai vitis-ai-yolov7
 Before quantization, the original FP32 model is evaluated:
 
 ```bash
-python test_nndct.py \
+python yolov7\test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
@@ -467,7 +430,7 @@ This establishes the baseline performance before INT8 quantization.
 Calibration is performed using representative data:
 
 ```bash
-python test_nndct.py \
+python yolov7\test_nndct.py\
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
@@ -488,7 +451,7 @@ The calibration stage determines the quantization parameters required to convert
 After calibration:
 
 ```bash
-python test_nndct.py \
+python yolov7\test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
@@ -509,7 +472,7 @@ This evaluates the quantized model and allows its accuracy to be compared agains
 The calibrated model is exported:
 
 ```bash
-python test_nndct.py \
+python yolov7\test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
     --batch 1 \
@@ -551,6 +514,9 @@ The final output is an `.xmodel` suitable for execution through Vitis AI Runtime
 #  AMD Kria™ KV260 Setup
 
 The final embedded deployment targets the **AMD Kria™ KV260 Vision AI Starter Kit**.
+
+
+![System Overview](docs/kv260.jpg)
 
 The board integrates:
 
@@ -766,7 +732,7 @@ Available options:
 ByteTrack is the default tracker.
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker bytetrack \
@@ -782,7 +748,7 @@ ByteTrack-specific parameters can be adjusted with:
 For example:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker bytetrack \
@@ -799,7 +765,7 @@ python3 dpu_tracking.py \
 To use DeepSORT:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker deepsort \
@@ -816,7 +782,7 @@ DeepSORT-specific parameters include:
 Example:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker deepsort \
@@ -834,7 +800,7 @@ python3 dpu_tracking.py \
 To use SORT:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker sort \
@@ -852,7 +818,7 @@ SORT-specific parameters include:
 Example:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker sort \
@@ -923,7 +889,7 @@ The IP address and port can be configured using:
 For example:
 
 ```bash
-python3 dpu_tracking.py \
+python3 inference_DPU/main.py \
     --xmodel ~/models/yolo_tiny.xmodel \
     --video ~/videos/teste2.mp4 \
     --tracker bytetrack \
@@ -935,7 +901,7 @@ python3 dpu_tracking.py \
 
 ---
 
-# 📄 MOT Output
+#  MOT Output
 
 The application can save tracking results in a MOT-style text file.
 
@@ -979,52 +945,9 @@ The file can subsequently be used to evaluate tracking performance using metrics
 * Identity Switches
 * Mostly Tracked
 * Mostly Lost
-
 ---
 
-# ⏱️ Runtime Measurements
-
-For every processed frame, the application measures:
-
-```text
-Pre-processing
-      │
-      ▼
-DPU Inference
-      │
-      ▼
-Post-processing
-      │
-      ▼
-Tracking
-      │
-      ▼
-Total Processing Time
-```
-
-The application prints information such as:
-
-```text
---- Frame 0001 [BYTETRACK] ---
-  Tracks Active:     3
-  Total Time:        35.69 ms
-```
-
-The total processing time is calculated as:
-
-```text
-Total Time =
-    Pre-processing
-  + DPU Inference
-  + Post-processing
-  + Tracking
-```
-
-This allows the computational cost of each stage of the pipeline to be analyzed independently.
-
----
-
-# 🧪 Running All Trackers
+#  Running All Trackers
 
 For experimental comparison, the three trackers can be executed sequentially.
 
