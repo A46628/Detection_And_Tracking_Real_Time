@@ -85,12 +85,9 @@ This project integrates the following frameworks, platforms, and toolchains:
     python train.py --workers 8 --device 0 --batch-size 16 --data data/military_dataset.yaml --img 640 640 --cfg cfg/deploy/yolov7-tiny.yaml --weights '' --name yolov7-tiny-military
 
  4. **Validate Model Metrics on Dataset
-   To evaluate the model's accuracy (mAP, Precision, Recall) on the validation or test set:
+    to evaluate the model's accuracy (mAP, Precision, Recall) on the validation or test set:
     ```bash
         python val.py --weights runs/train/yolov7-tiny-military/weights/best.pt --data data/military_dataset.yaml --img 640 --device 0
-  
-  
-
 
 ### Detection Model Validation (GPU)
 
