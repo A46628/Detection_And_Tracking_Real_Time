@@ -76,48 +76,7 @@ These results demonstrate that lightweight deep learning models combined with FP
 
 The system is based on a hardware/software co-design methodology.
 
-```text
-                    ┌───────────────────────┐
-                    │       UAV Camera      │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │   Image Preprocessing │
-                    │        CPU / ARM      │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │     YOLOv7-tiny       │
-                    │      INT8 Model       │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │          DPU          │
-                    │   FPGA Acceleration   │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │   Post-processing     │
-                    │       CPU / ARM       │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │ Tracking-by-Detection │
-                    │ SORT / ByteTrack /    │
-                    │      DeepSORT         │
-                    └───────────┬───────────┘
-                                │
-                                ▼
-                    ┌───────────────────────┐
-                    │ Target IDs + BBoxes   │
-                    │ + Class + Confidence  │
-                    └───────────────────────┘
-```
+![System Architecture](docs/Arquitetura.png)
 
 The computationally intensive neural network inference is mapped to the DPU, while control, preprocessing, post-processing, and tracking operations are executed by the ARM processor.
 
