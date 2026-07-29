@@ -195,22 +195,11 @@ This project integrates the following frameworks, platforms, and toolchains:
 
 * **Python**
 * **PyTorch**
-* **YOLOv7**
-* **YOLOv8**
-* **YOLO11**
 * **OpenCV**
 * **AMD Vitis AI 3.5**
 * **Vitis AI Runtime (VART)**
-* **INT8 Quantization**
 * **AMD Kria™ KV260 Vision AI Starter Kit**
-* **DPUCZDX8G**
 * **ARM CPU**
-* **FPGA / SoC**
-* **SORT**
-* **DeepSORT**
-* **ByteTrack**
-* **BoT-SORT**
-
 ---
 
 ## Getting Started
