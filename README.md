@@ -1,120 +1,191 @@
-# Defense Drone System with Real-time Object Detection and Target Tracking
+# 🛡️ Defense Drone System with Real-Time Object Detection and Multi-Object Tracking
 
-Autonomous aerial surveillance and target tracking powered by Deep Learning and System-on-Chip FPGA acceleration.
+> **FPGA-Accelerated UAV Perception using YOLOv7, AMD Vitis AI and the Kria™ KV260**
 
-This project presents an embedded UAV perception system based on the **Tracking-by-Detection** paradigm. The system combines real-time object detection using YOLO models with multi-object tracking algorithms and hardware acceleration through an AMD Kria™ KV260 Vision AI Starter Kit.
+An embedded real-time aerial surveillance system for **military object detection and multi-object tracking**, based on a hardware–software co-design approach combining **Deep Learning, FPGA acceleration, DPU inference, and Tracking-by-Detection**.
 
-The main objective is to achieve real-time detection and tracking on resource-constrained edge hardware while maintaining low latency, low power consumption, and sufficient detection and tracking accuracy.
+The system was developed and evaluated on the **AMD Kria™ KV260 Vision AI Starter Kit**, using **YOLOv7-tiny quantized to INT8** and accelerated through the DPU.
 
 ---
 
-## Table of Contents
+## 📌 Table of Contents
 
-* [About The Project](#about-the-project)
-* [System Architecture](#system-architecture)
-* [Dataset](#dataset)
-* [Built With](#built-with)
-* [Getting Started](#getting-started)
+* [About The Project](#-about-the-project)
+* [System Overview](#-system-overview)
+* [Key Results](#-key-results)
+* [Dataset](#-dataset)
+* [Built With](#-built-with)
+* [Project Structure](#-project-structure)
+* [Getting Started](#-getting-started)
 
   * [Prerequisites](#prerequisites)
   * [Installation](#installation)
-* [Training](#training)
-* [Usage](#usage)
+* [Training](#-training)
 
-  * [GPU Inference](#gpu-inference)
-  * [Tracking-by-Detection](#tracking-by-detection)
-  * [Embedded Deployment](#embedded-deployment)
-* [Tracking-by-Detection Pipeline](#tracking-by-detection-pipeline)
+  * [Train YOLOv7-tiny](#train-yolov7-tiny)
+  * [Validate the Model](#validate-the-model)
+* [GPU Inference](#-gpu-inference)
+* [Vitis AI Deployment](#-vitis-ai-deployment)
 
-  * [Supported Trackers](#supported-trackers)
-* [Results & Benchmarks](#results--benchmarks)
+  * [Docker Environment](#1-create-the-vitis-ai-docker-container)
+  * [Floating-Point Validation](#2-floating-point-validation)
+  * [INT8 Calibration](#3-post-training-quantization-calibration)
+  * [Quantized Model Validation](#4-int8-quantized-model-validation)
+  * [Dump Quantized Model](#5-dump-the-quantized-model)
+  * [DPU Compilation](#6-compile-the-model-for-the-dpu)
+* [AMD Kria KV260 Setup](#-amd-kria-kv260-setup)
 
-  * [1. Detection Model Validation (GPU)](#1-detection-model-validation-gpu)
-  * [2. Detection Model Validation (DPU / Embedded FPGA)](#2-detection-model-validation-dpu--embedded-fpga)
-  * [3. DPU Hardware Resource Consumption](#3-dpu-hardware-resource-consumption)
-  * [4. GPU vs DPU Comparison](#4-gpu-vs-dpu-comparison)
-  * [5. Multi-Object Tracking Results](#5-multi-object-tracking-results)
-  * [6. Complete Detection + Tracking Pipeline](#6-complete-detection--tracking-pipeline)
-* [Key Findings](#key-findings)
-* [Limitations](#limitations)
-* [Future Work](#future-work)
-* [Contributing](#contributing)
-* [Contact and Acknowledgements](#contact-and-acknowledgements)
+  * [PetaLinux](#1-prepare-the-petalinux-microsd-card)
+  * [Boot the KV260](#2-boot-the-kv260)
+  * [Verify the Platform](#3-verify-the-platform)
+* [Tracking-by-Detection](#-tracking-by-detection)
+
+  * [SORT](#sort)
+  * [DeepSORT](#deepsort)
+  * [ByteTrack](#bytetrack)
+  * [BoT-SORT](#bot-sort)
+* [Results & Benchmarks](#-results--benchmarks)
+
+  * [GPU Detection Results](#1-detection-model-validation-gpu)
+  * [DPU Detection Results](#2-detection-model-validation-dpu)
+  * [Hardware Resource Consumption](#3-dpu-hardware-resource-consumption)
+  * [GPU vs DPU](#4-gpu-vs-dpu)
+  * [Tracking Results](#5-multi-object-tracking-results)
+  * [Complete Pipeline](#6-complete-detection--tracking-pipeline)
+* [Conclusion](#-conclusion)
+* [Future Work](#-future-work)
+* [References](#-references)
+* [Contact](#-contact)
 
 ---
 
-## About The Project
+# 🔎 About The Project
 
-The project focuses on the development of an autonomous embedded UAV defense and surveillance system capable of performing **real-time object detection and multi-object tracking**.
+This project investigates the development of an **autonomous embedded UAV perception system** capable of detecting and tracking multiple military-related targets in real time.
 
 The system follows the **Tracking-by-Detection** paradigm:
 
-1. A YOLO-based object detector processes each video frame.
-2. Bounding boxes, class labels, and confidence scores are generated.
-3. A tracking algorithm associates detections between consecutive frames.
-4. A Kalman Filter predicts object motion.
-5. Data association is performed using spatial information and, depending on the tracker, appearance information.
-6. Each target is assigned and maintains a unique identity over time.
+```text
+Camera / Video
+      │
+      ▼
+Pre-processing
+      │
+      ▼
+YOLO Object Detection
+      │
+      ▼
+DPU-Accelerated Inference
+      │
+      ▼
+Post-processing
+      │
+      ▼
+Multi-Object Tracking
+      │
+      ▼
+Persistent Target IDs
+```
 
-The final embedded implementation uses an **INT8-quantized YOLOv7-tiny model** deployed on the DPU of an **AMD Kria™ KV260 Vision AI Starter Kit**.
+The main challenge is achieving real-time performance on an embedded platform with limited computational and energy resources.
 
-The final system achieved:
+To address this problem, the project combines:
 
-* **52 FPS** DPU inference
-* **19 ms** YOLOv7-tiny inference latency
-* **5.4 W** total power consumption
-* **36.8 MB** used CMA memory
-* **50.29% HOTA** with SORT
-* **77.16% MOTP** with SORT
-* Approximately **28.4 FPS** for the complete YOLOv7-tiny + SORT pipeline
+* Deep learning-based object detection
+* INT8 post-training quantization
+* AMD Vitis AI
+* FPGA-based DPU acceleration
+* ARM CPU processing
+* Multi-object tracking
+* Hardware/software co-design
 
-These results demonstrate that lightweight deep learning models combined with FPGA-based acceleration can provide real-time AI processing under strict power and computational constraints.
+The final embedded implementation uses **YOLOv7-tiny + INT8 + DPU acceleration on the AMD Kria KV260**. The model achieved **52 FPS with 19 ms inference latency**, while consuming approximately **5.4 W** and using **36.8 MB** of memory.
 
 ---
 
-## System Architecture
+# 🏗️ System Overview
 
-The system is based on a hardware/software co-design methodology.
+The complete system is divided between the **ARM processor** and the **FPGA-based DPU**.
 
-![System Architecture](docs/Arquitetura.png)
+```text
+                    AMD Kria™ KV260
+             ┌─────────────────────────┐
+             │                         │
+             │       ARM CPU           │
+             │                         │
+Camera ─────►│ Pre-processing          │
+             │ Post-processing         │
+             │ NMS                     │
+             │ Tracking                │
+             │                         │
+             │          │              │
+             │          ▼              │
+             │     Vitis AI Runtime    │
+             │          │              │
+             │          ▼              │
+             │     ┌───────────┐       │
+             │     │    DPU    │       │
+             │     │ YOLOv7-tiny│      │
+             │     │    INT8   │       │
+             │     └─────┬─────┘       │
+             │           │             │
+             └───────────┼─────────────┘
+                         │
+                         ▼
+                 Object Detections
+                         │
+                         ▼
+                Tracking-by-Detection
+                         │
+                         ▼
+                  Target IDs / Paths
+```
 
-The computationally intensive neural network inference is mapped to the DPU, while control, preprocessing, post-processing, and tracking operations are executed by the ARM processor.
-
-The model deployment flow uses **AMD Vitis AI 3.5**, including calibration, INT8 quantization, compilation, and generation of the `.xmodel` representation required by the target DPU.
+The DPU performs the computationally intensive neural-network inference, while the ARM processor handles frame processing, post-processing, tracking and system coordination.
 
 ---
 
-## Dataset
+# 🚀 Key Results
 
+| Metric                 |              Result |
+| ---------------------- | ------------------: |
+| Target Hardware        |  **AMD Kria KV260** |
+| Final Detector         |     **YOLOv7-tiny** |
+| Precision              |            **INT8** |
+| DPU Inference          |          **52 FPS** |
+| DPU Latency            |           **19 ms** |
+| Power Consumption      |           **5.4 W** |
+| Memory Usage           |         **36.8 MB** |
+| Best Tracking FPS      |        **28.4 FPS** |
+| Best HOTA              |   **50.29% — SORT** |
+| Best MOTP              |   **77.16% — SORT** |
+| Lowest ID Switches     |  **12 — ByteTrack** |
+| Lowest False Positives | **216 — ByteTrack** |
 
-This project uses the **Military Assets Dataset**, containing **12 classes** of military-related objects and provided in YOLO format.
+The final system demonstrates that hardware acceleration can provide real-time embedded inference while significantly reducing power consumption compared with the GPU environment.
 
-The dataset is publicly available on Kaggle:
+---
 
-**[Military Assets Dataset (12 Classes - YOLO8 Format)](https://www.kaggle.com/datasets/rawsi18/military-assets-dataset-12-classes-yolo8-format)**
+# 📊 Dataset
 
+The project uses the **Military Assets Dataset**, containing **26,315 annotated images** divided into training, validation and testing subsets.
 
-### People
+**Dataset split:**
 
-* Camouflaged soldiers
-* Soldiers in standard uniforms
-* Civilians
+| Split      |     Images |
+| ---------- | ---------: |
+| Training   |     21,978 |
+| Validation |      2,941 |
+| Testing    |      1,396 |
+| **Total**  | **26,315** |
 
-### Vehicles
+The dataset contains **12 classes**, covering people, military vehicles, civilian objects and weapons.
 
-* Military tanks
-* Military trucks
-* Aircraft
-* Warships
-* Civilian vehicles
+**Dataset source:**
 
-### Weapons / Military Structures
+[Military Assets Dataset — 12 Classes, YOLOv8 Format](https://www.kaggle.com/datasets/rawsi18/military-assets-dataset-12-classes-yolo8-format)
 
-* Firearms
-* Heavy artillery
-* Trenches
-
-The dataset follows the standard YOLO directory structure:
+### Dataset Structure
 
 ```text
 dataset/
@@ -122,118 +193,144 @@ dataset/
 │   ├── images/
 │   │   ├── 01.jpg
 │   │   ├── 02.jpg
-│   │   ├── 03.jpg
 │   │   └── ...
 │   │
 │   └── labels/
 │       ├── 01.txt
 │       ├── 02.txt
-│       ├── 03.txt
 │       └── ...
 │
 ├── val/
 │   ├── images/
-│   │   ├── 01.jpg
-│   │   ├── 02.jpg
-│   │   ├── 03.jpg
-│   │   └── ...
-│   │
 │   └── labels/
-│       ├── 01.txt
-│       ├── 02.txt
-│       ├── 03.txt
-│       └── ...
 │
 ├── test/
 │   ├── images/
-│   │   ├── 01.jpg
-│   │   ├── 02.jpg
-│   │   ├── 03.jpg
-│   │   └── ...
-│   │
 │   └── labels/
-│       ├── 01.txt
-│       ├── 02.txt
-│       ├── 03.txt
-│       └── ...
 │
 └── military_dataset.yaml
 ```
 
-Each image has a corresponding annotation file with the same filename:
+Each image has a corresponding YOLO annotation file:
 
 ```text
 images/01.jpg  →  labels/01.txt
 images/02.jpg  →  labels/02.txt
-images/03.jpg  →  labels/03.txt
 ```
 
-The dataset follows the YOLO annotation format:
+YOLO annotation format:
 
 ```text
 <class_id> <x_center> <y_center> <width> <height>
 ```
 
-For example:
-```text
-0 0.512 0.438 0.214 0.356
-2 0.721 0.563 0.183 0.241
-```
-
-Each image is associated with a YOLO annotation file containing:
-
-```text
-<class_id> <center_x> <center_y> <width> <height>
-```
-The dataset was divided into training, validation, and testing subsets. The test set contains **1,396 images**.
+The dataset follows the standard YOLO structure with separate `images/` and `labels/` directories for training, validation and testing.
 
 ---
 
-## Built With
+# 🧰 Built With
 
-This project integrates the following frameworks, platforms, and toolchains:
+### Machine Learning
 
-* **Python**
 * **PyTorch**
+* **YOLOv7**
+* **YOLOv8**
+* **YOLO11**
 * **OpenCV**
+* **Python**
+
+### FPGA / Embedded AI
+
 * **AMD Vitis AI 3.5**
+* **NNDCT**
+* **Vitis AI Quantizer**
+* **Vitis AI Compiler**
 * **Vitis AI Runtime (VART)**
+* **Xilinx Runtime (XRT)**
 * **AMD Kria™ KV260 Vision AI Starter Kit**
+* **DPU**
 * **ARM CPU**
+
+### Development Environment
+
+* Linux
+* Ubuntu
+* CUDA
+* NVIDIA GPU
+* Docker
+* Conda / Miniconda
+
 ---
 
-## Getting Started
+# 📁 Project Structure
 
-### Prerequisites
+```text
+Detection_And_Tracking_Real_Time/
+│
+├── dataset/
+│   ├── train/
+│   ├── val/
+│   └── test/
+│
+├── yolov7/
+│   ├── cfg/
+│   ├── data/
+│   ├── models/
+│   ├── runs/
+│   ├── train.py
+│   ├── val.py
+│   ├── detect.py
+│   ├── test_nndct.py
+│   └── requirements.txt
+│
+├── trackers/
+│   ├── SORT/
+│   ├── DeepSORT/
+│   └── ByteTrack/
+│
+├── docs/
+│   └── images/
+│
+└── README.md
+```
 
-#### Host PC / Training Server
+---
+
+# ⚙️ Getting Started
+
+## Prerequisites
+
+### Host PC / Training Server
 
 Recommended environment:
 
-* Linux OS
-* Ubuntu 20.04 / 22.04
+* Linux / Ubuntu 20.04 or 22.04
 * NVIDIA GPU with CUDA support
 * Anaconda / Miniconda
 * Docker
+* Python 3.8
 * PyTorch
 * CUDA Toolkit
 
-The training and model comparison experiments were performed using an NVIDIA GPU environment, including an NVIDIA GeForce RTX 4080.
+The model training and comparison experiments were performed using an NVIDIA GPU environment, including an **NVIDIA GeForce RTX 4080**.
 
-#### Target Hardware
+### Target Hardware
 
 * AMD Kria™ KV260 Vision AI Starter Kit
-* FPGA SoC
+* Zynq UltraScale+ MPSoC
 * ARM processor
+* FPGA programmable logic
 * DPU
-* Linux/PetaLinux-based environment
-* Vitis AI Runtime (VART)
+* MicroSD card
+* Ethernet connection
+* PetaLinux / embedded Linux
+* Vitis AI Runtime
 
 ---
 
-### Installation
+## Installation
 
-1. **Clone the repository:**
+Clone the repository:
 
 ```bash
 git clone https://github.com/A46628/Detection_And_Tracking_Real_Time.git
@@ -241,14 +338,14 @@ cd Detection_And_Tracking_Real_Time
 cd yolov7
 ```
 
-2. **Create the Python environment:**
+Create the Conda environment:
 
 ```bash
 conda create -n drone-env python=3.8 -y
 conda activate drone-env
 ```
 
-3. **Install the dependencies:**
+Install the Python dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -256,11 +353,9 @@ pip install -r requirements.txt
 
 ---
 
-## Training
+# 🎯 Training
 
-### Train YOLOv7-tiny
-
-The YOLOv7-tiny model can be trained using:
+## Train YOLOv7-tiny
 
 ```bash
 python train.py \
@@ -274,13 +369,17 @@ python train.py \
     --name yolov7-tiny-military
 ```
 
-The best model is saved under:
+The best model is generated at:
 
 ```text
 runs/train/yolov7-tiny-military/weights/best.pt
 ```
 
-### Validate the trained model
+The same experimental methodology was used to compare YOLOv7, YOLOv8 and YOLO11 models before selecting a suitable architecture for embedded deployment.
+
+---
+
+## Validate the Model
 
 ```bash
 python val.py \
@@ -299,9 +398,7 @@ The validation process evaluates:
 
 ---
 
-# Usage
-
-## GPU Inference
+# 🖥️ GPU Inference
 
 ### Single Image
 
@@ -333,52 +430,57 @@ python detect.py \
     --source 0
 ```
 
+---
 
+# 🔧 Vitis AI Deployment
 
-## Vitis AI Model Quantization and Compilation
-
-The YOLOv7 model was prepared for deployment on the **AMD Kria™ KV260 DPU** using the **AMD Vitis AI** toolchain.
-
-The quantization workflow was executed inside a Docker container based on the official **Xilinx Vitis AI CPU image**:
-
-**[Xilinx Vitis AI CPU Docker Image](https://hub.docker.com/r/xilinx/vitis-ai-cpu)**
-
-The complete workflow consists of three main stages:
+The deployment workflow converts the original FP32 model into a hardware-optimized **INT8 model** suitable for execution on the DPU.
 
 ```text
-YOLOv7 FP32 Model
-       │
-       ▼
-   Float Test
-       │
-       ▼
-    Calibration
-       │
-       ▼
- INT8 Quantization
-       │
-       ▼
- Quantized Test
-       │
-       ▼
-  Dump XModel
-       │
-       ▼
-   .xmodel
-       │
-       ▼
-    KV260 DPU
+YOLOv7 FP32
+     │
+     ▼
+Float Validation
+     │
+     ▼
+PTQ Calibration
+     │
+     ▼
+INT8 Quantization
+     │
+     ▼
+Quantized Validation
+     │
+     ▼
+Dump Quantized Model
+     │
+     ▼
+Vitis AI Compiler
+     │
+     ▼
+.xmodel
+     │
+     ▼
+KV260 DPU
 ```
 
-### 1. Create the Vitis AI Docker Container
+The project uses the AMD/Xilinx Vitis AI workflow for quantization and compilation. The report describes the use of Docker to isolate the Vitis AI environment and the conversion of the model from FP32 to INT8 for DPU execution.
 
-First, pull the Vitis AI CPU image from Docker Hub:
+---
+
+## 1. Create the Vitis AI Docker Container
+
+The quantization environment was created using the official **Xilinx Vitis AI CPU Docker image**:
+
+[Xilinx Vitis AI CPU — Docker Hub](https://hub.docker.com/r/xilinx/vitis-ai-cpu)
+
+Pull the image:
 
 ```bash
 docker pull xilinx/vitis-ai-cpu:latest
 ```
 
-Create a Docker container with access to the project directory:
+Create the container:
 
 ```bash
 docker run -it \
@@ -389,25 +491,25 @@ docker run -it \
     /bin/bash
 ```
 
-### 2. Enter the YOLOv7 Project
-
-Inside the Docker container:
+Enter the project:
 
 ```bash
 cd /workspace/yolov7
 ```
 
-The following commands assume that the YOLOv7 repository and trained weights are available inside this directory.
+If the container already exists:
+
+```bash
+docker start -ai vitis-ai-yolov7
+```
 
 ---
 
-### 3. Floating-Point Model Validation
+## 2. Floating-Point Validation
 
-Before quantization, the original floating-point model is evaluated using the NNDCT pipeline.
+Before quantization, the original FP32 model is evaluated:
 
 ```bash
-cd /workspace/yolov7
-
 python test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
@@ -420,17 +522,15 @@ python test_nndct.py \
     --quant_mode float
 ```
 
-The `float` mode evaluates the original FP32 model and provides a baseline against which the quantized model can be compared.
+This establishes the baseline performance before INT8 quantization.
 
 ---
 
-### 4. Post-Training Quantization — Calibration
+## 3. Post-Training Quantization — Calibration
 
-The next step performs **Post-Training Quantization (PTQ)** calibration.
+Calibration is performed using representative data:
 
 ```bash
-cd /workspace/yolov7
-
 python test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
@@ -440,20 +540,18 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode calib 
+    --quant_mode calib
 ```
 
-During calibration, representative data is used to determine the quantization parameters required to convert the model from floating-point representation to **INT8**.
+The calibration stage determines the quantization parameters required to convert the model from FP32 to INT8.
 
 ---
 
-### 5. INT8 Quantized Model Validation
+## 4. INT8 Quantized Model Validation
 
-After calibration, the quantized model can be evaluated using:
+After calibration:
 
 ```bash
-cd /workspace/yolov7
-
 python test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
@@ -463,22 +561,18 @@ python test_nndct.py \
     --device 0 \
     --weights yolov7.pt \
     --name yolov7_640_val \
-    --quant_mode test 
+    --quant_mode test
 ```
 
-This stage verifies the accuracy of the quantized INT8 model before deployment to the DPU.
-
-The resulting metrics can be compared against the original floating-point model to quantify the accuracy degradation caused by quantization.
+This evaluates the quantized model and allows its accuracy to be compared against the original FP32 model.
 
 ---
 
-### 6. Dump the Quantized Model
+## 5. Dump the Quantized Model
 
-Finally, the calibrated and quantized model is exported using the `--dump_model` option:
+The calibrated model is exported:
 
 ```bash
-cd /workspace/yolov7
-
 python test_nndct.py \
     --data data/yolov7/custom_dataset_calib.yaml \
     --img 640 \
@@ -491,85 +585,209 @@ python test_nndct.py \
     --quant_mode test \
     --dump_model
 ```
-The dumped model is generated in a format suitable for the subsequent Vitis AI compilation flow.
 
-The resulting `.xmodel` is then used for inference with the **DPU on the AMD Kria™ KV260**.
+The dumped model is then prepared for compilation with the Vitis AI compiler.
 
 ---
 
+## 6. Compile the Model for the DPU
 
+After calibration and quantization, the INT8 model must be compiled for the target DPU architecture.
 
-### 1. Download and Prepare the PetaLinux Image
+The Vitis AI compiler converts the quantized model into an `.xmodel` optimized for the target DPU.
 
-The **PetaLinux** image used to initialize the AMD Kria™ KV260 was downloaded from the official AMD Embedded Software download portal.
+Example:
 
-**Official AMD Embedded Software Downloads:**
+```bash
+vai_c_xir \
+    -x <quantized_model>.xmodel \
+    -a /opt/vitis-ai/compiler/arch/DPUCZDX8G/<target>/arch.json \
+    -o ./compiled \
+    -n yolov7_tiny_kv260
+```
 
-[AMD Embedded Software Downloads — PetaLinux](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html?utm_source=chatgpt.com)
+> **Important:** The `arch.json` must correspond to the actual DPU architecture configured on the target KV260 platform. The exact architecture file should therefore be verified against the deployed DPU overlay before compilation.
 
-For this project, the **PetaLinux 2026.1** installer was used:
+The final output is an `.xmodel` suitable for execution through Vitis AI Runtime.
 
-[PetaLinux 2026.1 Installer](https://account.amd.com/en/forms/downloads/xef.html?filename=petalinux-v2026.1-06061130-installer.run&utm_source=chatgpt.com)
+---
 
-The downloaded PetaLinux image was then transferred to a **MicroSD card** using **balenaEtcher**.
+# 💻 AMD Kria™ KV260 Setup
 
-**balenaEtcher:**
+The final embedded deployment targets the **AMD Kria™ KV260 Vision AI Starter Kit**.
 
-[Download balenaEtcher](https://etcher.balena.io/?utm_source=chatgpt.com)
+The board integrates:
 
-balenaEtcher provides a simple three-step process for writing an operating-system image to removable storage: **select the image, select the target drive, and flash the image**. It also validates the flashing process after completion.
+* Zynq UltraScale+ MPSoC
+* ARM processing system
+* FPGA programmable logic
+* 4 GB DDR4
+* MicroSD storage
+* Gigabit Ethernet
+* HDMI / DisplayPort
+* DPU acceleration
 
-The process is:
+The report describes the MicroSD card as the storage medium for the embedded operating system and configuration files, while Ethernet is used for SSH and remote file transfer.
 
-1. Download the appropriate **PetaLinux image** from the AMD Embedded Software portal.
-2. Install and open **balenaEtcher**.
-3. Insert the MicroSD card into the host computer.
-4. Select the downloaded PetaLinux image.
-5. Select the MicroSD card as the target device.
-6. Flash the image to the MicroSD card.
-7. Wait for the validation process to complete.
+---
+
+## 1. Prepare the PetaLinux MicroSD Card
+
+The PetaLinux image was obtained from the official AMD Embedded Software portal:
+
+[AMD Embedded Software Downloads](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html)
+
+The **PetaLinux 2026.1** installer used during the setup is available here:
+
+[PetaLinux 2026.1 Installer](https://account.amd.com/en/forms/downloads/xef.html?filename=petalinux-v2026.1-06061130-installer.run)
+
+The image was transferred to a MicroSD card using **balenaEtcher**:
+
+[balenaEtcher](https://etcher.balena.io/)
+
+The process was:
+
+```text
+PetaLinux Image
+      │
+      ▼
+balenaEtcher
+      │
+      ▼
+MicroSD Card
+      │
+      ▼
+AMD Kria KV260
+      │
+      ▼
+PetaLinux Boot
+```
+
+### Procedure
+
+1. Download the PetaLinux image from AMD.
+2. Install and open balenaEtcher.
+3. Insert the MicroSD card.
+4. Select the PetaLinux image.
+5. Select the MicroSD card as the target.
+6. Flash the image.
+7. Wait for the verification process.
 8. Safely eject the MicroSD card.
-9. Insert the MicroSD card into the **AMD Kria™ KV260**.
-10. Power on the board and allow PetaLinux to boot.
+9. Insert it into the KV260.
+10. Power on the board.
 
+> **Warning:** Flashing the image erases the selected MicroSD card.
 
-## Supported Trackers
+---
 
-### SORT
+## 2. Boot the KV260
+
+After inserting the MicroSD card and powering the board, PetaLinux boots on the ARM processor.
+
+The KV260 can then be accessed through the local terminal or through Ethernet/SSH:
+
+```bash
+ssh <username>@<KV260_IP>
+```
+
+Verify the system:
+
+```bash
+uname -a
+```
+
+---
+
+## 3. Verify the Platform
+
+The KV260 platform can be monitored using:
+
+```bash
+xmutil xlnx_platformstats
+```
+
+This command was also used during the experiments to monitor platform status, including power and hardware resource information.
+
+---
+
+# 🎯 Tracking-by-Detection
+
+Object detection alone provides information for a single frame. To maintain target identity over time, the system uses the **Tracking-by-Detection** paradigm.
+
+```text
+Frame t
+   │
+   ▼
+YOLOv7-tiny
+   │
+   ▼
+Bounding Boxes
+   │
+   ▼
+Data Association
+   │
+   ▼
+Track IDs
+   │
+   ▼
+Frame t+1
+   │
+   ▼
+YOLOv7-tiny
+   │
+   ▼
+Data Association
+   │
+   ▼
+Updated Tracks
+```
+
+The implemented trackers are based on temporal prediction and data association using techniques such as the **Kalman Filter, IoU and Hungarian algorithm**.
+
+---
+
+## SORT
 
 **Simple Online and Realtime Tracking**
 
 SORT combines:
 
 * Kalman Filter
-* IoU-based matching
+* IoU-based association
 * Hungarian algorithm
 
-It is computationally lightweight and particularly suitable for embedded platforms.
+It is computationally lightweight and particularly suitable for resource-constrained embedded platforms.
 
-### DeepSORT
+---
+
+## DeepSORT
 
 DeepSORT extends SORT by introducing a deep appearance descriptor.
 
-It provides improved identity association under occlusion but introduces substantially higher computational requirements because an additional neural network is used for visual feature extraction.
+This improves identity association under occlusions but introduces a significant computational cost because an additional neural network must process the detected object crops.
 
-### ByteTrack
+---
 
-ByteTrack associates both high-confidence and low-confidence detections.
+## ByteTrack
 
-The two-stage association strategy helps recover objects under:
+ByteTrack uses both high-confidence and low-confidence detections during association.
+
+This can improve robustness under:
 
 * Partial occlusion
 * Motion blur
 * Low detector confidence
+* Target crossings
 
-ByteTrack achieved the lowest number of identity switches in the experiments.
+ByteTrack achieved the **lowest number of identity switches** in the experiments.
 
-### BoT-SORT
+---
 
-BoT-SORT was studied as an advanced SORT-based approach incorporating camera-motion compensation and improved association strategies.
+## BoT-SORT
 
-However, the final quantitative tracking comparison on the embedded platform focused on:
+BoT-SORT was also investigated as an advanced tracking approach incorporating improved association strategies and camera-motion compensation.
+
+The final quantitative embedded comparison focused on:
 
 * SORT
 * DeepSORT
@@ -577,62 +795,54 @@ However, the final quantitative tracking comparison on the embedded platform foc
 
 ---
 
-# Results & Benchmarks
+# 📈 Results & Benchmarks
 
-## 1. Detection Model Validation (GPU)
+## 1. Detection Model Validation — GPU
 
-The following results were obtained during model validation on the military dataset.
+The initial model comparison was performed on the military dataset using GPU inference.
 
-| Model           |   mAP@0.5 | mAP@0.5:0.95 | Precision |    Recall |     FPS | Execution (ms) |
-| --------------- | --------: | -----------: | --------: | --------: | ------: | -------------: |
-| **YOLOv7-tiny** |     0.387 |        0.212 |     0.662 |     0.404 | **435** |        **2.3** |
-| **YOLOv7**      | **0.629** |        0.424 |     0.683 | **0.610** |     278 |            3.6 |
-| **YOLOv7x**     |     0.517 |        0.323 | **0.716** |     0.494 |     167 |            6.0 |
-| **YOLOv8**      |     0.625 |    **0.448** |     0.621 |     0.578 |     294 |            3.4 |
-| **YOLO11x**     |     0.610 |        0.439 |     0.618 |     0.572 |      97 |           10.3 |
-| **YOLO11m**     |     0.620 |        0.455 |     0.630 |     0.583 |     232 |            4.3 |
-| **YOLO11n**     |     0.560 |        0.375 |     0.695 |     0.502 |     370 |            2.7 |
+| Model           |   mAP@0.5 | mAP@0.5:0.95 | Precision |    Recall |     FPS |    Latency |
+| --------------- | --------: | -----------: | --------: | --------: | ------: | ---------: |
+| **YOLOv7-tiny** |     0.387 |        0.212 |     0.662 |     0.404 | **435** | **2.3 ms** |
+| **YOLOv7**      | **0.629** |        0.424 |     0.683 | **0.610** |     278 |     3.6 ms |
+| **YOLOv7x**     |     0.517 |        0.323 | **0.716** |     0.494 |     167 |     6.0 ms |
+| **YOLOv8**      |     0.625 |        0.448 |     0.621 |     0.578 |     294 |     3.4 ms |
+| **YOLO11x**     |     0.610 |        0.439 |     0.618 |     0.572 |      97 |    10.3 ms |
+| **YOLO11m**     |     0.620 |    **0.455** |     0.630 |     0.583 |     232 |     4.3 ms |
+| **YOLO11n**     |     0.560 |        0.375 |     0.695 |     0.502 |     370 |     2.7 ms |
 
-YOLOv7 obtained the highest **mAP@0.5 (0.629)**, while YOLOv8 achieved the highest **mAP@0.5:0.95 (0.448)**.
-
-YOLOv7-tiny provided the highest processing speed, reaching **435 FPS**, making it the most suitable candidate for embedded deployment despite its lower detection accuracy.
+YOLOv7 achieved the highest mAP@0.5, while YOLOv7-tiny achieved the highest processing speed.
 
 ---
 
-## 2. Detection Model Validation (DPU / Embedded FPGA)
+## 2. Detection Model Validation — DPU
 
-After INT8 quantization and deployment to the KV260 DPU, the YOLOv7 variants achieved:
+After INT8 quantization and deployment to the KV260:
 
-| Model           |   mAP@0.5 | mAP@0.5:0.95 | Precision |    Recall |    FPS |   Latency |
-| --------------- | --------: | -----------: | --------: | --------: | -----: | --------: |
-| **YOLOv7-tiny** | **0.387** |        0.198 |     0.587 |     0.376 | **52** | **19 ms** |
-| **YOLOv7**      |     0.591 |    **0.356** |     0.647 | **0.583** |     10 |    104 ms |
-| **YOLOv7x**     |     0.486 |        0.273 | **0.703** |     0.459 |      6 |    179 ms |
+| Model           | mAP@0.5 | mAP@0.5:0.95 | Precision | Recall |    FPS |   Latency |
+| --------------- | ------: | -----------: | --------: | -----: | -----: | --------: |
+| **YOLOv7-tiny** |   0.387 |        0.198 |     0.587 |  0.376 | **52** | **19 ms** |
+| **YOLOv7**      |   0.591 |        0.356 |     0.647 |  0.583 |     10 |    104 ms |
+| **YOLOv7x**     |   0.486 |        0.273 | **0.703** |  0.459 |      6 |    179 ms |
 
-The results show a clear trade-off between model complexity and real-time performance.
-
-**YOLOv7-tiny was selected as the final embedded model** because it was the only tested variant capable of maintaining a real-time processing rate while keeping power consumption low.
+YOLOv7-tiny was selected as the final embedded detector because it was the only tested model capable of maintaining real-time performance on the DPU.
 
 ---
 
 ## 3. DPU Hardware Resource Consumption
 
-Performance measurements on the AMD Kria™ KV260 were:
+| Metric        | YOLOv7-tiny |   YOLOv7 |  YOLOv7x |
+| ------------- | ----------: | -------: | -------: |
+| Power         |   **5.4 W** |   10.2 W |   10.9 W |
+| Current       | **1068 mA** |  2020 mA |  2172 mA |
+| Available CMA |     1535 MB |  1453 MB |  1388 MB |
+| Used CMA      | **36.8 MB** | 116.9 MB | 179.8 MB |
 
-| Metric               | YOLOv7-tiny |   YOLOv7 |  YOLOv7x |
-| -------------------- | ----------: | -------: | -------: |
-| Total Power          |   **5.4 W** |   10.2 W |   10.9 W |
-| Total Current        | **1068 mA** |  2020 mA |  2172 mA |
-| Available CMA Memory |     1535 MB |  1453 MB |  1388 MB |
-| Used CMA Memory      | **36.8 MB** | 116.9 MB | 179.8 MB |
-
-YOLOv7-tiny required only **5.4 W** and **36.8 MB** of memory, making it the most suitable model for a battery-powered UAV platform.
+The lightweight YOLOv7-tiny model provides the best balance between inference speed, memory consumption and energy efficiency.
 
 ---
 
-## 4. GPU vs DPU Comparison
-
-The embedded DPU provides significantly lower power consumption compared with the GPU environment.
+## 4. GPU vs DPU
 
 | Metric       | Hardware | YOLOv7-tiny |   YOLOv7 |  YOLOv7x |
 | ------------ | -------- | ----------: | -------: | -------: |
@@ -640,33 +850,20 @@ The embedded DPU provides significantly lower power consumption compared with th
 |              | DPU      |       0.387 |    0.591 |    0.486 |
 | mAP@0.5:0.95 | GPU      |       0.212 |    0.424 |    0.323 |
 |              | DPU      |       0.198 |    0.356 |    0.273 |
-| Precision    | GPU      |       0.662 |    0.683 |    0.716 |
-|              | DPU      |       0.587 |    0.647 |    0.703 |
-| Recall       | GPU      |       0.404 |    0.610 |    0.494 |
-|              | DPU      |       0.376 |    0.583 |    0.459 |
-| FPS          | GPU      |         435 |      278 |      167 |
+| FPS          | GPU      |     **435** |      278 |      167 |
 |              | DPU      |      **52** |       10 |        6 |
-| Execution    | GPU      |      2.3 ms |   3.6 ms |   6.0 ms |
-|              | DPU      |   **19 ms** |   104 ms |   179 ms |
-| Power        | GPU      |      58.0 W |  134.0 W |  172.0 W |
+| Latency      | GPU      |      2.3 ms |   3.6 ms |   6.0 ms |
+|              | DPU      |       19 ms |   104 ms |   179 ms |
+| Power        | GPU      |        58 W |    134 W |    172 W |
 |              | DPU      |   **5.4 W** |   10.2 W |   10.9 W |
 | Memory       | GPU      |     376 MiB |  680 MiB |  966 MiB |
 |              | DPU      | **36.8 MB** | 116.9 MB | 179.8 MB |
 
-The DPU is slower than the GPU in raw inference throughput, but operates with dramatically lower power consumption.
-
-For YOLOv7-tiny:
-
-* GPU: **435 FPS / 58 W**
-* DPU: **52 FPS / 5.4 W**
-
-This represents a substantial reduction in power consumption while still satisfying the real-time requirement for the embedded application.
+The GPU provides substantially higher raw throughput, while the DPU provides a much lower power budget suitable for embedded UAV applications. For YOLOv7-tiny, the system moves from **435 FPS at 58 W** on the GPU to **52 FPS at 5.4 W** on the DPU.
 
 ---
 
-## 5. Multi-Object Tracking Results
-
-The final tracking evaluation compared SORT, DeepSORT, and ByteTrack.
+# 5. Multi-Object Tracking Results
 
 | Metric            |  ByteTrack | DeepSORT |       SORT |
 | ----------------- | ---------: | -------: | ---------: |
@@ -679,38 +876,129 @@ The final tracking evaluation compared SORT, DeepSORT, and ByteTrack.
 | Mostly Tracked    |         45 |  **112** |         97 |
 | Mostly Lost       |        241 |  **157** |        170 |
 
-### Tracking Analysis
+### Main Findings
 
-**SORT** achieved the best spatial tracking performance:
+**SORT**
 
-* HOTA: **50.29%**
-* MOTP: **77.16%**
+* Highest HOTA: **50.29%**
+* Highest MOTP: **77.16%**
+* Low computational complexity
+* Excellent spatial/geometric tracking performance
 
-Its low computational complexity makes it particularly suitable for the resource-constrained KV260.
+**ByteTrack**
 
-**ByteTrack** achieved:
+* Highest MOTA: **59.42%**
+* Lowest false positives: **216**
+* Lowest identity switches: **12**
+* Strong robustness under occlusions and low-confidence detections
 
-* MOTA: **59.42%**
-* Lowest FP: **216**
-* Lowest ID switches: **12**
+**DeepSORT**
 
-Therefore, ByteTrack provides the best performance when identity consistency and false-positive reduction are the main priorities.
-
-**DeepSORT** had the highest computational cost because its appearance extraction network runs on the host CPU. This caused a significant performance bottleneck in the embedded environment.
+* High computational cost
+* 1,844 false positives
+* 43 identity switches
+* Not suitable for real-time execution on the tested embedded configuration
 
 ---
 
-## 6. Complete Detection + Tracking Pipeline
-
-The final pipeline combines YOLOv7-tiny with the tracking algorithms.
+# 6. Complete Detection + Tracking Pipeline
 
 | Pipeline Stage        |    ByteTrack |   DeepSORT |         SORT |
 | --------------------- | -----------: | ---------: | -----------: |
-| Pre-processing (CPU)  |      9.86 ms |    9.86 ms |      9.86 ms |
-| Inference (DPU)       |     19.01 ms |   19.01 ms |     19.01 ms |
-| Post-processing (CPU) |      2.80 ms |    2.80 ms |      2.80 ms |
-| Tracking (CPU)        |      4.02 ms | 2191.11 ms |  **3.50 ms** |
-| **Total latency**     | **35.69 ms** | 2222.78 ms | **35.17 ms** |
-| **FPS**               |     **28.0** |       0.45 |     **28.4** |
+| Pre-processing — CPU  |      9.86 ms |    9.86 ms |      9.86 ms |
+| Inference — DPU       |     19.01 ms |   19.01 ms |     19.01 ms |
+| Post-processing — CPU |      2.80 ms |    2.80 ms |      2.80 ms |
+| Tracking — CPU        |      4.02 ms | 2191.11 ms |  **3.50 ms** |
+| **Total Latency**     | **35.69 ms** | 2222.78 ms | **35.17 ms** |
+| **FPS**               |     **28.0** |   **0.45** |     **28.4** |
 
-The complete system demonstrates that the DPU inference itself is not the only factor determining system-level performance.
+The results show that the DPU inference is only one component of the complete real-time pipeline. CPU-side post-processing and tracking can become the dominant bottleneck depending on the tracking algorithm.
+
+---
+
+# 🏆 Conclusion
+
+The experiments demonstrate that **YOLOv7-tiny + INT8 + DPU acceleration** provides the best balance between detection performance, latency, power consumption and memory usage for the target embedded platform.
+
+On the AMD Kria™ KV260, YOLOv7-tiny achieved:
+
+```text
+52 FPS
+19 ms latency
+5.4 W
+36.8 MB memory
+```
+
+For multi-object tracking, **SORT** achieved the highest HOTA and MOTP, while **ByteTrack** achieved the highest MOTA and the lowest number of false positives and identity switches.
+
+Considering identity robustness and the real-time constraint, the final analysis identifies **YOLOv7-tiny + ByteTrack** as a strong solution for tactical UAV surveillance, while **SORT** remains highly attractive when computational efficiency and spatial tracking precision are prioritized.
+
+---
+
+# 🔮 Future Work
+
+Potential future improvements include:
+
+* DPU acceleration of DeepSORT's appearance feature extractor
+* Camera motion compensation
+* Improved CPU/DPU pipeline parallelization
+* Further optimization of post-processing and NMS
+* Multi-camera tracking
+* UAV flight integration
+* Hardware-in-the-loop testing
+* Real-world aerial dataset evaluation
+* Further reduction of end-to-end latency
+
+The report identifies mapping the DeepSORT appearance network onto the DPU as one possible direction for addressing its current computational bottleneck.
+
+---
+
+# 📚 References
+
+### Dataset
+
+Madhuwala, R. *Military Assets Dataset (12 Classes - YOLO8 Format).* Kaggle, 2024.
+
+[Military Assets Dataset](https://www.kaggle.com/datasets/rawsi18/military-assets-dataset-12-classes-yolo8-format)
+
+### AMD / Xilinx
+
+[AMD Embedded Software Downloads](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html)
+
+[PetaLinux 2026.1 Installer](https://account.amd.com/en/forms/downloads/xef.html?filename=petalinux-v2026.1-06061130-installer.run)
+
+[AMD Kria™ KV260 Vision AI Starter Kit](https://www.amd.com/en/products/system-on-modules/kria/k26/kv260-vision-starter-kit.html)
+
+[Vitis AI Documentation](https://xilinx.github.io/Vitis-AI/3.5/html/)
+
+### Development Tools
+
+[balenaEtcher](https://etcher.balena.io/)
+
+[Xilinx Vitis AI CPU Docker Image](https://hub.docker.com/r/xilinx/vitis-ai-cpu)
+
+---
+
+# 📖 Thesis
+
+This repository accompanies the Master's dissertation:
+
+**Defense Drone System with Real-time Object Detection and Target Tracking**
+
+The project investigates real-time object detection and multi-object tracking using deep learning, FPGA acceleration, DPU inference and hardware/software co-design on the AMD Kria™ KV260 platform.
+
+---
+
+# 📬 Contact
+
+**Paulo Tavares**
+
+For questions, collaboration or further information about this project, please open an issue or contact the author through the repository.
+
+---
+
+## ⭐ Acknowledgements
+
+This work was developed as part of a Master's research project focused on embedded AI, FPGA acceleration and real-time UAV perception.
+
+Special thanks to the academic and technical resources provided by **AMD/Xilinx**, the open-source computer vision community, and the authors of the datasets and tracking algorithms used throughout this work.
