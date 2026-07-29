@@ -88,17 +88,6 @@ This project integrates the following frameworks, platforms, and toolchains:
     ```bash
         python val.py --weights runs/train/yolov7-tiny-military/weights/best.pt --data data/military_dataset.yaml --img 640 --device 0
 
-### Detection Model Validation (GPU)
-
-| Model | mAP 50 | mAP 50-95 | Precision | Recall | FPS | Speed (ms) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **YOLOv7-tiny** | 0.387 | 0.212 | 0.662 | 0.404 | **435** | **2.3** |
-| **YOLOv7** | **0.629** | 0.424 | 0.683 | **0.610** | 278 | 3.6 |
-| **YOLOv7x** | 0.517 | 0.323 | **0.716** | 0.494 | 167 | 6.0 |
-| **YOLOv8** | 0.625 | 0.448 | 0.621 | 0.578 | 294 | 3.4 |
-| **YOLO11n** | 0.560 | 0.375 | 0.695 | 0.502 | 370 | 2.7 |
-
-
 ## Usage
 ### Run Inference with Trained Weights (GPU / PC)
 
@@ -113,4 +102,14 @@ This project integrates the following frameworks, platforms, and toolchains:
  - **Webcam:**
   ```bash
    python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source 0
+
+### Detection Model Validation (GPU)
+
+| Model | mAP 50 | mAP 50-95 | Precision | Recall | FPS | Speed (ms) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **YOLOv7-tiny** | 0.387 | 0.212 | 0.662 | 0.404 | **435** | **2.3** |
+| **YOLOv7** | **0.629** | 0.424 | 0.683 | **0.610** | 278 | 3.6 |
+| **YOLOv7x** | 0.517 | 0.323 | **0.716** | 0.494 | 167 | 6.0 |
+| **YOLOv8** | 0.625 | 0.448 | 0.621 | 0.578 | 294 | 3.4 |
+| **YOLO11n** | 0.560 | 0.375 | 0.695 | 0.502 | 370 | 2.7 |
 
