@@ -1,6 +1,7 @@
 ![System Architecture](docs/isel.png)
 
-Master's Final Project : Defense Drone System with Real-Time Object Detection and Multi-Object Tracking
+Master's Final Project : Defense Drone System with Real-Time Object Detection and Multi-Object Tracking.
+
 Author : Paulo Tavares, ISEL
 
 Autonomous aerial surveillance and target tracking powered by **Deep Learning, FPGA acceleration, DPU inference, and Tracking-by-Detection**.
