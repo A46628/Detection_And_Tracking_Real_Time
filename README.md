@@ -509,6 +509,122 @@ The resulting `.xmodel` is then used for inference with the **DPU on the AMD Kri
 ---
 
 
+
+### 1. Download and Prepare the PetaLinux Image
+
+The **PetaLinux** image used to initialize the AMD Kria™ KV260 was downloaded from the official AMD Embedded Software download portal.
+
+**Official AMD Embedded Software Downloads:**
+
+[AMD Embedded Software Downloads — PetaLinux](https://www.amd.com/en/support/downloads/adaptive-socs-and-fpgas/embedded-software.html?utm_source=chatgpt.com)
+
+For this project, the **PetaLinux 2026.1** installer was used:
+
+[PetaLinux 2026.1 Installer](https://account.amd.com/en/forms/downloads/xef.html?filename=petalinux-v2026.1-06061130-installer.run&utm_source=chatgpt.com)
+
+The downloaded PetaLinux image was then transferred to a **MicroSD card** using **balenaEtcher**.
+
+**balenaEtcher:**
+
+[Download balenaEtcher](https://etcher.balena.io/?utm_source=chatgpt.com)
+
+balenaEtcher provides a simple three-step process for writing an operating-system image to removable storage: **select the image, select the target drive, and flash the image**. It also validates the flashing process after completion.
+
+#### MicroSD Preparation
+
+The procedure used for the KV260 was:
+
+```text id="j9p8xz"
+PetaLinux 2026.1
+       │
+       │ Download from AMD
+       ▼
+PetaLinux Image
+       │
+       │ balenaEtcher
+       ▼
+   MicroSD Card
+       │
+       │ Insert into KV260
+       ▼
+AMD Kria™ KV260
+       │
+       ▼
+   PetaLinux Boot
+       │
+       ▼
+Embedded Linux Environment
+```
+
+The process is:
+
+1. Download the appropriate **PetaLinux image** from the AMD Embedded Software portal.
+2. Install and open **balenaEtcher**.
+3. Insert the MicroSD card into the host computer.
+4. Select the downloaded PetaLinux image.
+5. Select the MicroSD card as the target device.
+6. Flash the image to the MicroSD card.
+7. Wait for the validation process to complete.
+8. Safely eject the MicroSD card.
+9. Insert the MicroSD card into the **AMD Kria™ KV260**.
+10. Power on the board and allow PetaLinux to boot.
+
+> **Warning:** Flashing an image with balenaEtcher erases the contents of the selected drive. Make sure the correct MicroSD card is selected before starting the flashing process.
+
+### 2. Boot the KV260
+
+After flashing, the MicroSD card is inserted into the KV260 and the board is powered on.
+
+The PetaLinux environment provides the embedded Linux operating system required to run the application and interact with the KV260's processing system and programmable logic.
+
+After booting, the board can be accessed through a local terminal or remotely through Ethernet/SSH:
+
+```bash id="xj4p6m"
+ssh <username>@<KV260_IP>
+```
+
+The Linux environment can then be verified with:
+
+```bash id="7z2nqk"
+uname -a
+```
+
+and:
+
+```bash id="3f7y1a"
+ls
+```
+
+Once the KV260 is successfully booted, the platform is ready for the next stages of the deployment process:
+
+```text id="p2q7ks"
+PetaLinux
+    │
+    ▼
+KV260 Platform
+    │
+    ▼
+Vitis AI Runtime
+    │
+    ▼
+DPU
+    │
+    ▼
+YOLOv7-tiny INT8
+    │
+    ▼
+Object Detection
+    │
+    ▼
+Tracking
+```
+
+> **Version note:** AMD currently identifies PetaLinux as a legacy/transitioning embedded Linux toolchain and recommends AMD Embedded Development Framework (EDF) for future projects. This project documents the PetaLinux-based setup used during development.
+
+
+
+
+
 ## Supported Trackers
 
 ### SORT
