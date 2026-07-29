@@ -865,15 +865,5 @@ Madhuwala, R. *Military Assets Dataset (12 Classes - YOLO8 Format).* Kaggle, 202
 
 [Xilinx Vitis AI CPU Docker Image](https://hub.docker.com/r/xilinx/vitis-ai-cpu)
 
----
 
-#  Thesis
-
-This repository accompanies the Master's dissertation:
-
-**Defense Drone System with Real-time Object Detection and Target Tracking**
-
-The project investigates real-time object detection and multi-object tracking using deep learning, FPGA acceleration, DPU inference and hardware/software co-design on the AMD Kria™ KV260 platform.
-
----
 
