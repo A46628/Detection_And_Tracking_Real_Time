@@ -1,8 +1,0 @@
-{
-    "lib": "libvart-dpu-runner.so",
-    "filename": "yolo_tiny.xmodel",
-    "kernel": [
-        "subgraph_Model__Model_Concat_model__Concat_13__Cat_cat__input_63"
-    ],
-    "target": "DPUCZDX8G_ISA1_B4096"
-}
