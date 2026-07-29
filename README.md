@@ -84,8 +84,16 @@ This project integrates the following frameworks, platforms, and toolchains:
     conda activate drone-env
     pip install -r requirements.txt
 
-3. **Train / Validate Model
+3. **Train Model 
    ```bash
-       python train.py --workers 8 --device 0 --batch-size 16 --data data/military_dataset.yaml --img 640 640 --cfg cfg/deploy/yolov7-tiny.yaml --weights '' --name yolov7-tiny-military
+    python train.py --workers 8 --device 0 --batch-size 16 --data data/military_dataset.yaml --img 640 640 --cfg cfg/deploy/yolov7-tiny.yaml --weights '' --name yolov7-tiny-military
+   
+## Usage
+
+### Run Inference with Trained Weights (GPU / PC)
+
+- **Single Image:**
+  ```bash
+  python detect.py --weights runs/train/yolov7-tiny-military/weights/best.pt --conf 0.25 --img-size 640 --source path/to/image.jpg
 
 4. 
