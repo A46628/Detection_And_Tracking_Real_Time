@@ -76,7 +76,7 @@ These results demonstrate that lightweight deep learning models combined with FP
 
 The system is based on a hardware/software co-design methodology.
 
-![System Architecture](docs/Arquitetura.png)
+![System Architecture](docs/architecture.png)
 
 The computationally intensive neural network inference is mapped to the DPU, while control, preprocessing, post-processing, and tracking operations are executed by the ARM processor.
 
@@ -85,6 +85,52 @@ The model deployment flow uses **AMD Vitis AI 3.5**, including calibration, INT8
 ---
 
 ## Dataset
+## Dataset
+
+This project uses the **Military Assets Dataset**, containing **12 classes** of military-related objects and provided in YOLO format.
+
+The dataset is publicly available on Kaggle:
+
+**[Military Assets Dataset (12 Classes - YOLO8 Format)](https://www.kaggle.com/datasets/rawsi18/military-assets-dataset-12-classes-yolo8-format)**
+
+The dataset includes images and annotations suitable for training and evaluating object detection models.
+
+### Dataset Classes
+
+The 12 object classes used in the project are:
+
+| ID | Class                    |
+| -: | ------------------------ |
+|  0 | Soldier                  |
+|  1 | Tank                     |
+|  2 | Military Truck           |
+|  3 | Aircraft                 |
+|  4 | Warship                  |
+|  5 | Civilian                 |
+|  6 | Civilian Vehicle         |
+|  7 | Firearm                  |
+|  8 | Artillery                |
+|  9 | Trench                   |
+| 10 | Camouflaged Soldier      |
+| 11 | Standard Uniform Soldier |
+
+### Dataset Format
+
+The annotations follow the YOLO format:
+
+```text
+<class_id> <x_center> <y_center> <width> <height>
+```
+
+Example:
+
+```text
+0 0.512 0.438 0.214 0.356
+```
+
+where the coordinates are normalized to the image dimensions.
+
+> **Dataset source:** [Military Assets Dataset (12 Classes - YOLO8 Format)](https://www.kaggle.com/datasets/rawsi18/military-assets-dataset-12-classes-yolo8-format)
 
 The project uses a custom military object detection dataset containing **12 classes** organized into three main categories:
 
@@ -131,6 +177,8 @@ Each image is associated with a YOLO annotation file containing:
 
 The dataset was divided into training, validation, and testing subsets. The test set contains **1,396 images**.
 
+
+
 ---
 
 ## Built With
@@ -139,21 +187,13 @@ This project integrates the following frameworks, platforms, and toolchains:
 
 * **Python**
 * **PyTorch**
-* **YOLOv7**
-* **YOLOv8**
-* **YOLO11**
 * **OpenCV**
 * **AMD Vitis AI 3.5**
 * **Vitis AI Runtime (VART)**
-* **INT8 Quantization**
 * **AMD Kria™ KV260 Vision AI Starter Kit**
-* **DPUCZDX8G**
+* **Balena
 * **ARM CPU**
 * **FPGA / SoC**
-* **SORT**
-* **DeepSORT**
-* **ByteTrack**
-* **BoT-SORT**
 
 ---
 
