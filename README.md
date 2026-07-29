@@ -71,3 +71,21 @@ This project integrates the following frameworks, platforms, and toolchains:
    ```bash
    git clone https://github.com/seu-usuario/Defense-Drone-System.git
    cd Defense-Drone-System
+
+
+   Set Up Python Environment:
+
+   conda create -n drone-env python=3.8 -y
+
+   
+2. **Set Up Python Environment
+   ```bash
+    conda create -n drone-env python=3.8 -y
+    conda activate drone-env
+    pip install -r requirements.txt
+
+3. **Train / Validate Model
+   ```bash
+       python train.py --workers 8 --device 0 --batch-size 16 --data data/military_dataset.yaml --img 640 640 --cfg cfg/deploy/yolov7-tiny.yaml --weights '' --name yolov7-tiny-military
+
+4. 
